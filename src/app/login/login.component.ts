@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
+import { UserStorageService } from '../services/storage/user-storage.service';
 
 @Component({
   selector: 'app-login',
@@ -36,7 +37,12 @@ onSubmit():void {
 
  this.authService.login(username,password).subscribe(
   (response)=>{
-    this.snackBar.open('Login successful!','Ok',{duration:5000});
+    if(UserStorageService.isAdminLoggedIn()){
+      this.router.navigateByUrl('/admin/dashboard');
+    } else if(UserStorageService.isCustomerLoggedIn()){
+      this.router.navigateByUrl('/customer/dashboard');
+    }
+
   },
   (err)=>{
   this.snackBar.open('Login Failed!','close',{duration:5000,panelClass:'error-snackbar'});
